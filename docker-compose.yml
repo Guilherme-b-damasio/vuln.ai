@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  zap:
+    image: owasp/zap2docker-stable
+    container_name: zap
+    command: zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.key.enabled=false
+    ports:
+      - "8080:8080"
+    networks:
+      - vuln-net
+
+  backend:
+    build: ./backend
+    container_name: vuln-backend
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - zap
+    ports:
+      - "5000:5000"
+    environment:
+      - ZAP_API_URL=http://zap:8080
+      - ZAP_API_KEY=
+    networks:
+      - vuln-net
+
+  frontend:
+    build: ./frontend
+    container_name: vuln-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - vuln-net
+
+networks:
+  vuln-net:
+    driver: bridge
