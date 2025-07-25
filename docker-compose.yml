@@ -1,16 +1,17 @@
-version: "3.8"
 services:
   zap:
-    image: owasp/zap2docker-stable
+    image: ghcr.io/zaproxy/zaproxy:stable
     container_name: zap
-    command: zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.key.enabled=false
+    command: zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.disablekey=true -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
     ports:
       - "8080:8080"
     networks:
       - vuln-net
 
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      dockerfile: docker/Dockerfile
     container_name: vuln-backend
     volumes:
       - ./backend:/app
@@ -24,9 +25,11 @@ services:
     networks:
       - vuln-net
 
-  frontend:
-    build: ./frontend
-    container_name: vuln-frontend
+  vulnui:
+    build: 
+      context: ./vulnui
+      dockerfile: docker/Dockerfile
+    container_name: vulnui
     ports:
       - "3000:3000"
     depends_on:

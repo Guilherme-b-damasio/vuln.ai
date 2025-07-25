@@ -7,7 +7,8 @@ ZAP_PID=$!
 sleep 15
 
 # Rodar seu script Python que orquestra os scans
-python cli.py
+# O './app.py' garante que o script seja executado a partir do diretório atual de trabalho (/app).
+python ./app/app.py
 
 # Parar o ZAP
 kill $ZAP_PID
