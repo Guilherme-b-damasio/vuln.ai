@@ -25,13 +25,16 @@ def scan():
     zap_summary = [{"alert": a.get("alert"), "risk": a.get("risk"), "url": a.get("url")} for a in zap_alerts]
 
     # Rodar scan Nikto (ele salva resultado em arquivo e imprime no console)
-    # Para capturar saída resumida, vamos ler o arquivo e pegar as primeiras linhas
     nikto_result_summary = []
     try:
-        nikto_scanner.scan(target_url)
-        with open("nikto_report.txt", "r") as f:
+        nikto_output_path = nikto_scanner.scan(target_url)
+        print(f"Lendo relatório Nikto em: {nikto_output_path}")
+        print(f"[DEBUG] Tentando abrir: {nikto_output_path}")
+        print(f"[DEBUG] Arquivo existe? {os.path.exists(nikto_output_path)}")
+        output_path = os.path.join("relatorios", "nikto_report.txt")
+        with open(output_path, "r") as f:
             lines = f.readlines()
-            nikto_result_summary = lines[:10]  # pegar as 10 primeiras linhas
+            nikto_result_summary = lines
     except Exception as e:
         nikto_result_summary = [f"Erro ao executar Nikto: {str(e)}"]
 
